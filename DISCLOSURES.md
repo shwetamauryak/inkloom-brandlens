@@ -2,10 +2,11 @@
 
 This document discloses all libraries, APIs, external dependencies, datasets, templates, and AI tools used in BrandLens for CodeNova India 2026 Round 2.
 
-## 1. AI Coding Assistance Disclosure
-- **AI Coding Assistant**: Built with the assistance of Google DeepMind's Antigravity agentic coding platform.
-- **Earlier prototype and documents**: An earlier version of the prototype and repository documents was drafted with Anthropic's Claude.
-- **Human Role**: Architecture design, engineering decisions, requirement specification, quality assurance, and code validation were performed directly by the hackathon participant.
+## ## 1. AI Coding Assistance Disclosure
+- **Google Antigravity**: Used for later development, including the serverless AI route, knowledge base, visual checks and insights features.
+- **Anthropic Claude**: Used for the first prototype and early repository documents.
+- **OpenAI ChatGPT**: Used for additional assistance during development.
+- **Human Role**: Requirement specification, testing, deployment, engineering decisions and quality assurance were performed by the participant.
 
 ## 2. External APIs & AI Models
 - **Google Gemini API** (model set by `GEMINI_MODEL`, default `gemini-2.5-flash`): Used server-side in `/api/ai-review` for semantic tone and claim verification.
