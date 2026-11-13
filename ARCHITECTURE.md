@@ -46,4 +46,3 @@ Items failing these criteria are safely discarded, and the UI displays transpare
 
 ### 2.4 Data Flow & State Management
 - State is managed via a single reactive state object saved to `localStorage`.
-- Optional Supabase connection for persistent cloud storage when keys are provided, with seamless local fallback if absent.
