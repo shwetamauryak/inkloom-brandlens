@@ -1,0 +1,18 @@
+{
+  "name": "inkloom-brandlens",
+  "version": "1.0.0",
+  "description": "BrandLens - Brand Governance Platform (CodeNova India 2026)",
+  "main": "index.html",
+  "scripts": {
+    "test": "python3 evaluate_violations.py",
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "brand-governance",
+    "content-audit",
+    "inkloom",
+    "brandlens"
+  ],
+  "author": "Shweta Maurya",
+  "license": "MIT"
+}

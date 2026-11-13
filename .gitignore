@@ -1,0 +1,19 @@
+# Environment variables (NEVER commit secrets!)
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Build and Vercel artifacts
+.vercel
+dist/
+build/
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/

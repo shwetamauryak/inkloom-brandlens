@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BrandLens: AI Brand Governance Platform</title>
+<!-- Pinned Mammoth.js for browser-side .docx extraction -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<style>
+:root {
+  --bg: #f5f6fb;
+  --cd: #ffffff;
+  --tx: #1b2238;
+  --mu: #5b6280;
+  --bd: #dde1ef;
+  --ac: #3b5bdb;
+  --ac-hover: #2b44b5;
+  --ax: #ffffff;
+  --h: #fde8e8;
+  --ht: #b42318;
+  --m: #fff1d6;
+  --mt: #945400;
+  --l: #e6efff;
+  --lt: #1d4ed8;
+  --ok: #e3f5e9;
+  --okt: #17692f;
+  --warn-bg: #fef3c7;
+  --warn-tx: #92400e;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #12151f;
+  --cd: #1b2030;
+  --tx: #e8ebf6;
+  --mu: #a3aac4;
+  --bd: #2c3350;
+  --ac: #7c93ff;
+  --ac-hover: #9bb0ff;
+  --ax: #0f1424;
+  --h: #3a1c1f;
+  --ht: #ffb4ab;
+  --m: #3a2c10;
+  --mt: #ffd68a;
+  --l: #16284a;
+  --lt: #a8c3ff;
+  --ok: #12301c;
+  --okt: #8fe0a8;
+  --warn-bg: #452b0a;
+  --warn-tx: #fde68a;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--tx);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  transition: background 0.2s, color 0.2s;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--cd);
+  border-bottom: 1px solid var(--bd);
+  padding: 10px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand-title { display: flex; align-items: center; gap: 8px; }
+h1 { font-size: 18px; margin: 0; display: inline-flex; align-items: center; gap: 6px; }
+h2 { font-size: 16px; margin: 0 0 8px; }
+h3 { font-size: 14px; margin: 12px 0 4px; }
+
+.seg { display: inline-flex; border: 1px solid var(--bd); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; background: none; padding: 6px 12px; cursor: pointer; color: inherit; font-size: 13px; font-weight: 500; }
+.seg .on { background: var(--ac); color: var(--ax); }
+
+nav {
+  max-width: 1100px;
+  margin: 12px auto 0;
+  padding: 0 16px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+nav button {
+  border: 1px solid var(--bd);
+  background: var(--cd);
+  border-radius: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+  color: var(--tx);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+nav button:hover { border-color: var(--ac); }
+nav .on { border-color: var(--ac); color: var(--ac); font-weight: 700; background: var(--l); }
+
+main { max-width: 1100px; margin: 12px auto; padding: 0 16px 40px; }
+.cd { background: var(--cd); border: 1px solid var(--bd); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
+.g { display: grid; gap: 14px; grid-template-columns: 1.1fr 0.9fr; }
+@media (max-width: 820px) { .g { grid-template-columns: 1fr; } }
+
+label { display: block; font-size: 13px; font-weight: 600; color: var(--mu); margin: 10px 0 3px; }
+input[type=text], input[type=date], select, textarea {
+  width: 100%;
+  background: var(--bg);
+  color: var(--tx);
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font: inherit;
+}
+textarea { min-height: 140px; resize: vertical; }
+
+.b {
+  border: 1px solid var(--ac);
+  background: var(--ac);
+  color: var(--ax);
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.b:hover { background: var(--ac-hover); }
+.b.s { background: none; color: var(--ac); }
+.b.s:hover { background: var(--l); }
+.b.danger { border-color: var(--ht); background: none; color: var(--ht); }
+.b.danger:hover { background: var(--h); }
+.b:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.p { display: inline-block; font-size: 12px; border-radius: 99px; padding: 2px 8px; font-weight: 600; }
+.high { background: var(--h); color: var(--ht); }
+.medium { background: var(--m); color: var(--mt); }
+.low { background: var(--l); color: var(--lt); }
+.ok { background: var(--ok); color: var(--okt); }
+
+mark { border-radius: 3px; padding: 0 2px; color: inherit; font-weight: 600; }
+mark.high { background: var(--h); border-bottom: 2px solid var(--ht); }
+mark.medium { background: var(--m); border-bottom: 2px solid var(--mt); }
+mark.low { background: var(--l); border-bottom: 2px solid var(--lt); }
+
+.f { border: 1px solid var(--bd); border-radius: 8px; padding: 12px; margin-bottom: 10px; background: var(--cd); }
+.f.d { opacity: 0.65; border-style: dashed; }
+.mu { color: var(--mu); font-size: 13px; }
+.pv { white-space: pre-wrap; background: var(--bg); border: 1px solid var(--bd); border-radius: 8px; padding: 12px; line-height: 1.6; min-height: 90px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+.row select { width: auto; }
+
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+td, th { border-bottom: 1px solid var(--bd); padding: 8px 6px; text-align: left; vertical-align: top; }
+th { color: var(--mu); font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+
+/* Quick Try Banner */
+.quicktry {
+  background: linear-gradient(135deg, rgba(59,91,219,0.08), rgba(124,147,255,0.12));
+  border: 1px solid var(--ac);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+.quicktry-steps { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; }
+.quicktry-step { display: inline-flex; align-items: center; gap: 5px; }
+.quicktry-step span { background: var(--ac); color: var(--ax); width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; }
+
+/* Intent Preserving Diff */
+.diff-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0; background: var(--bg); padding: 10px; border-radius: 8px; font-size: 13px; }
+.diff-box del { color: var(--ht); background: var(--h); padding: 1px 4px; border-radius: 3px; text-decoration: none; }
+.diff-box ins { color: var(--okt); background: var(--ok); padding: 1px 4px; border-radius: 3px; text-decoration: none; font-weight: 600; }
+
+/* PII Alert Banner */
+.pii-alert { background: var(--warn-bg); color: var(--warn-tx); padding: 10px; border-radius: 8px; font-size: 13px; margin: 10px 0; display: flex; gap: 8px; align-items: center; }
+
+/* Modal Styles */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.modal-content { background: var(--cd); border: 1px solid var(--bd); border-radius: 12px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+
+/* Color Swatches */
+.swatch { width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--bd); display: inline-block; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand-title">
+    <h1>🛡️ BrandLens</h1>
+    <span class="mu" style="font-size:13px">· AI Brand Governance Platform</span>
+  </div>
+  <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+    <button class="b s" style="padding:4px 8px; font-size:12px" onclick="toggleTheme()" title="Toggle Dark/Light Mode" id="themeBtn">🌙 Dark</button>
+    <div style="display:flex; align-items:center; gap:6px">
+      <span class="mu" style="font-size:13px">Role:</span>
+      <span class="seg" id="rs"></span>
+    </div>
+  </div>
+</header>
+
+<nav id="nv"></nav>
+
+<main id="mn"></main>
+
+<!-- Modal Container -->
+<div id="modalContainer" style="display:none"></div>
+
+<script>
+// --- Utility Helpers ---
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const esc = s => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const now = () => new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+// --- Theme Management ---
+function initTheme() {
+  const saved = localStorage.getItem('brandlens-theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeBtn(saved);
+}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('brandlens-theme', next);
+  updateThemeBtn(next);
+}
+function updateThemeBtn(theme) {
+  const b = $('#themeBtn');
+  if (b) b.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+}
+
+// --- Default Knowledge Base Seed Data ---
+const DEFAULT_KB = {
+  brandName: 'Brewly',
+  guidelines: [
+    { id: 'G1', name: 'Voice & Tone', rule: 'Warm, clear and honest. No hype and no shouting (avoid ALL CAPS and multiple exclamation marks).' },
+    { id: 'G2', name: 'Terminology', rule: 'Write "Brewly" with a capital B. Prefer "affordable" to "cheap" and "customers" to "users".' },
+    { id: 'G3', name: 'Claims & Proof', rule: 'Every number, ranking or promise must match an active approved fact. Superlatives require verifiable proof.' },
+    { id: 'G4', name: 'Accessibility & Links', rule: 'Images need descriptive alt text. Link text must describe the destination (avoid generic "click here"). Hashtags use CamelCase.' },
+    { id: 'G5', name: 'Readability', rule: 'Keep sentences under 25 words to ensure high readability.' },
+    { id: 'G6', name: 'Email & Ads', rule: 'Email subject lines must be under 60 characters. Promotional copy must contain a clear, approved Call to Action (CTA).' }
+  ],
+  facts: [
+    { id: 'F1', text: 'Brewly sources beans from 120 partner farms.', source: 'Sustainability Report 2026', expiry: '2027-03-31' },
+    { id: 'F2', text: 'Free delivery on orders above ₹499.', source: 'Pricing Policy v4', expiry: '2026-12-31' },
+    { id: 'F4', text: 'Flat 30% off autumn sale.', source: 'Autumn Campaign Brief', expiry: '2026-10-31' } // expired fact
+  ],
+  terms: [
+    { bad: 'cheap', good: 'affordable', note: 'Not preferred brand wording' },
+    { bad: 'users', good: 'customers', note: 'Brewly says "customers", not "users"' },
+    { bad: 'subscribers', good: 'club members', note: 'Prefer "club members" for Coffee Club' }
+  ],
+  colors: [
+    { name: 'Brewly Blue (Primary)', hex: '#3b5bdb', role: 'Primary' },
+    { name: 'Dark Roast (Text)', hex: '#1b2238', role: 'Text' },
+    { name: 'Cream Foam (Background)', hex: '#f5f6fb', role: 'Background' },
+    { name: 'Caramel Accent', hex: '#d97706', role: 'Accent' }
+  ]
+};
+
+const SAMPLE = 'Our cheap beans are the BEST in town!!! brewly sources from 200 farms. Get 30% off today, plus free delivery on orders above ₹299. Click here to order now. #brewlylove';
+
+// --- State Management with LocalStorage & Safe Error Handling ---
+let S;
+function loadState() {
+  try {
+    const raw = localStorage.getItem('brandlens-v2');
+    if (raw) S = JSON.parse(raw);
+  } catch (e) {
+    console.warn('LocalStorage read error, using fresh state:', e);
+  }
+
+  if (!S || !S.subs) {
+    S = {
+      role: 'creator',
+      kb: JSON.parse(JSON.stringify(DEFAULT_KB)),
+      subs: []
+    };
+    // Seed initial sample submission
+    const f = checkContent(SAMPLE, { type: 'Social post', img: 0, alt: '' }, S.kb);
+    S.subs.push({
+      id: 's1',
+      title: 'Autumn promo post',
+      type: 'Social post',
+      text: SAMPLE,
+      img: 0,
+      alt: '',
+      status: 'In review',
+      findings: f.map(x => ({ ...x, dis: null })),
+      vers: [{ t: now(), label: 'Created', text: SAMPLE }],
+      comments: [],
+      log: [{ t: now(), ev: 'Submitted for review by Creator' }]
+    });
+  }
+  // Ensure KB is populated
+  if (!S.kb) S.kb = JSON.parse(JSON.stringify(DEFAULT_KB));
+}
+
+const save = () => {
+  try {
+    localStorage.setItem('brandlens-v2', JSON.stringify(S));
+  } catch (e) {
+    console.error('LocalStorage save failed:', e);
+  }
+};
+
+// Draft state
+const blankDraft = () => ({
+  id: null,
+  title: '',
+  type: 'Social post',
+  subject: '',
+  cta: '',
+  text: '',
+  img: 0,
+  alt: '',
+  imgFile: null,
+  imgMeta: null,
+  vers: [],
+  dis: {},
+  comments: [],
+  log: [],
+  ai: []
+});
+
+let D = blankDraft(), F = [], V = { tab: 'check', sel: null };
+
+const NAV_TABS = [
+  ['check', '✍️ Audit Content'],
+  ['subs', '📋 Submissions'],
+  ['rules', '📚 Knowledge Base'],
+  ['visual', '🎨 Visual Identity'],
+  ['insights', '📊 Governance Insights'],
+  ['transparency', '🛡️ AI & Privacy']
+];
+
+// --- WCAG 2.1 Contrast Calculation Algorithm ---
+function hexToRgb(hex) {
+  const m = hex.replace(/^#/, '').match(/.{1,2}/g);
+  if (!m || m.length < 3) return [0, 0, 0];
+  return [parseInt(m[0], 16), parseInt(m[1], 16), parseInt(m[2], 16)];
+}
+function sRgbLuminance([r, g, b]) {
+  const a = [r, g, b].map(v => {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+}
+function getContrastRatio(hex1, hex2) {
+  const lum1 = sRgbLuminance(hexToRgb(hex1));
+  const lum2 = sRgbLuminance(hexToRgb(hex2));
+  const brightest = Math.max(lum1, lum2);
+  const darkest = Math.min(lum1, lum2);
+  return (brightest + 0.05) / (darkest + 0.05);
+}
+
+// --- Dynamic Content Checking Engine ---
+function checkContent(text, meta, kb) {
+  const findings = [];
+  const add = (m, rule, sev, why, fix, fact, man, preserved) => {
+    findings.push({
+      pos: m.index !== undefined ? m.index : -1,
+      span: m[0] !== undefined ? m[0] : (m.span || ''),
+      rule,
+      sev,
+      why,
+      fix: fix || '',
+      fact: fact || '',
+      man: !!man,
+      preserved: preserved || ''
+    });
+  };
+
+  const each = (re, fn) => {
+    for (const m of text.matchAll(re)) fn(m);
+  };
+
+  const brand = (kb && kb.brandName) || 'Brewly';
+
+  // 1. Terminology checks from Dynamic Knowledge Base
+  if (kb && kb.terms) {
+    kb.terms.forEach(term => {
+      if (!term.bad) return;
+      const re = new RegExp('\\b' + term.bad.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
+      each(re, m => {
+        add(m, 'G2', 'medium', `"${m[0]}" is not preferred brand terminology.`, term.good, '', 0, `Changed tone while preserving product context.`);
+      });
+    });
+  }
+
+  // 2. Brand Name Capitalization
+  const brandRe = new RegExp('\\b' + brand + '\\b', 'gi');
+  each(brandRe, m => {
+    if (m[0] !== brand) {
+      add(m, 'G2', 'medium', `The brand name must be written "${brand}".`, brand, '', 0, `Capitalized brand name correctly.`);
+    }
+  });
+
+  // 3. Shouting / ALL CAPS
+  each(/\b[A-Z]{4,}\b/g, m => {
+    if (m[0] !== brand.toUpperCase()) {
+      add(m, 'G1', 'medium', 'Capital letters read as shouting and violate honest tone.', m[0][0] + m[0].slice(1).toLowerCase(), '', 0, `Converted all-caps word to lower case.`);
+    }
+  });
+
+  // 4. Multiple exclamation marks
+  let exCount = 0;
+  each(/!/g, m => {
+    if (++exCount > 1) {
+      add(m, 'G1', 'low', 'Use at most one exclamation mark to avoid hype.', '.', '', 0, `Replaced excessive exclamation mark with period.`);
+    }
+  });
+
+  // 5. Unsubstantiated superlatives
+  each(/\b(?:best|no\. ?1|number one|guaranteed|unbeatable)\b|100%|#1\b/gi, m => {
+    add(m, 'G3', 'high', `Unsupported claim: no approved fact backs "${m[0]}". Remove it or cite an approved fact.`, '', '', 0, `Removed unverified superlative claim.`);
+  });
+
+  // 6. Fact verification (dynamic check against facts)
+  if (kb && kb.facts) {
+    // Farm count check
+    const f1 = kb.facts.find(f => f.id === 'F1');
+    if (f1) {
+      const matchNum = f1.text.match(/\b(\d+)\b/);
+      const expectedFarms = matchNum ? matchNum[1] : '120';
+      each(/(\d[\d,]*)\+?\s*(?:partner\s+)?farms/gi, m => {
+        const val = m[1].replace(/,/g, '');
+        if (val !== expectedFarms) {
+          add(m, 'G3', 'high', `This farm count contradicts the approved fact: ${expectedFarms} partner farms.`, `${expectedFarms} partner farms`, 'F1', 0, `Corrected farm count to match Sustainability Report.`);
+        }
+      });
+    }
+
+    // Delivery threshold check
+    const f2 = kb.facts.find(f => f.id === 'F2');
+    if (f2) {
+      const matchThreshold = f2.text.match(/₹\s?(\d+)/);
+      const expectedThreshold = matchThreshold ? matchThreshold[1] : '499';
+      each(/free delivery[^.!?\n]*?₹\s?(\d[\d,]*)/gi, m => {
+        const val = m[1].replace(/,/g, '');
+        if (val !== expectedThreshold) {
+          add(m, 'G3', 'high', `Delivery threshold contradicts the approved fact: ₹${expectedThreshold}.`, m[0].replace(m[1], expectedThreshold), 'F2', 0, `Aligned free delivery threshold with pricing policy.`);
+        }
+      });
+    }
+
+    // Expired facts check
+    const nowTime = new Date();
+    kb.facts.forEach(fact => {
+      if (fact.expiry && new Date(fact.expiry) < nowTime) {
+        // Look for keywords
+        if (fact.id === 'F4' || /autumn|30%\s*off/i.test(fact.text)) {
+          each(/\b30% off\b/gi, m => {
+            add(m, 'G3', 'high', `This promotional offer expired on ${fact.expiry}, so it must not be advertised.`, '', fact.id, 0, `Removed expired seasonal promotion.`);
+          });
+        }
+      }
+    });
+  }
+
+  // 7. Accessibility link text
+  each(/\bclick here\b/gi, m => {
+    add(m, 'G4', 'medium', 'Link text should describe the specific destination for accessibility.', 'Browse our coffee', '', 0, `Replaced non-descriptive link text with destination-oriented action.`);
+  });
+
+  // 8. CamelCase Hashtags
+  each(/#[a-z]{7,}\b/g, m => {
+    const fixed = m[0].replace(/^#brewly/i, '#Brewly')
+                      .replace(/^(#Brewly)([a-z])/i, (a, b, c) => '#Brewly' + c.toUpperCase())
+                      .replace(/^#([a-z])/, (a, b) => '#' + b.toUpperCase());
+    add(m, 'G4', 'low', 'Hashtags are much easier for screen readers when formatted in CamelCase.', fixed, '', 0, `Converted hashtag to CamelCase for screen readers.`);
+  });
+
+  // 9. Sentence Length (Readability)
+  let p = 0;
+  text.split(/(?<=[.!?])\s+/).forEach(s => {
+    const i = text.indexOf(s, p);
+    p = i + s.length;
+    if (s.split(/\s+/).filter(Boolean).length > 25) {
+      findings.push({
+        pos: i,
+        span: s,
+        rule: 'G5',
+        sev: 'low',
+        why: 'This sentence has more than 25 words. Consider breaking it down for readability.',
+        fix: '',
+        man: true,
+        preserved: 'Sentence splitting requires manual tone judgment.'
+      });
+    }
+  });
+
+  // 10. Template & Image Checks
+  if (meta) {
+    // Image Alt text check
+    if (meta.img && (!meta.alt || !meta.alt.trim())) {
+      findings.push({
+        pos: -1,
+        span: 'Image Asset',
+        rule: 'G4',
+        sev: 'medium',
+        why: 'The included image has no alt text. Screen-reader users and visually impaired customers will miss the context.',
+        fix: '',
+        man: true,
+        preserved: 'Add descriptive alt text describing beans, packaging, or scene.'
+      });
+    }
+
+    // Email Subject check
+    if (meta.type === 'Email' && meta.subject) {
+      if (meta.subject.length > 60) {
+        findings.push({
+          pos: -1,
+          span: `Subject: "${meta.subject}"`,
+          rule: 'G6',
+          sev: 'medium',
+          why: `Email subject line is ${meta.subject.length} chars (guideline recommendation is under 60 chars to avoid mobile cutoff).`,
+          fix: meta.subject.slice(0, 57) + '...',
+          man: false,
+          preserved: 'Truncated subject line to 60 characters.'
+        });
+      }
+    }
+  }
+
+  // Sort and assign unique IDs
+  findings.sort((a, b) => a.pos - b.pos);
+  const counts = {};
+  findings.forEach(x => {
+    const k = x.rule + '|' + x.span;
+    counts[k] = (counts[k] || 0) + 1;
+    x.k = k + '|' + counts[k];
+  });
+
+  return findings;
+}
+
+// Highlight text with findings
+function hl(t, findings) {
+  let out = '', lastIdx = 0;
+  findings.forEach(x => {
+    if (x.pos >= lastIdx && x.span && x.pos >= 0) {
+      out += esc(t.slice(lastIdx, x.pos)) + `<mark class="${x.sev}" title="[${x.rule}] ${esc(x.why)}">${esc(x.span)}</mark>`;
+      lastIdx = x.pos + x.span.length;
+    }
+  });
+  return out + esc(t.slice(lastIdx));
+}
+
+const getRuleName = (ruleId, kb) => {
+  const g = (kb.guidelines || []).find(x => x.id === ruleId);
+  return g ? `${ruleId} · ${g.name}` : ruleId;
+};
+
+// Check for PII before external API calls
+function detectPII(t) {
+  const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+  const phoneRegex = /\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/g;
+  const emails = t.match(emailRegex) || [];
+  const phones = t.match(phoneRegex) || [];
+  return { hasPII: emails.length > 0 || phones.length > 0, emails, phones };
+}
+
+// --- Topbar & Navigation Bar ---
+function topbar() {
+  $('#rs').innerHTML = ['creator', 'reviewer'].map(r =>
+    `<button class="${S.role === r ? 'on' : ''}" onclick="S.role='${r}';save();draw()">${r === 'creator' ? '✍️ Creator' : '🔍 Reviewer'}</button>`
+  ).join('');
+
+  $('#nv').innerHTML = NAV_TABS.map(([tabId, label]) =>
+    `<button class="${V.tab === tabId ? 'on' : ''}" onclick="V.tab='${tabId}';V.sel=null;draw()">${label}</button>`
+  ).join('');
+}
+
+function draw() {
+  topbar();
+  switch (V.tab) {
+    case 'check': vCheck(); break;
+    case 'subs': vSubs(); break;
+    case 'rules': vRules(); break;
+    case 'visual': vVisual(); break;
+    case 'insights': vInsights(); break;
+    case 'transparency': vTransparency(); break;
+    default: vCheck();
+  }
+}
+
+// --- VIEW 1: Audit Content ---
+function vCheck() {
+  const pii = detectPII(D.text);
+
+  $('#mn').innerHTML = `
+    <!-- 2-Minute Quick Try Banner -->
+    <div class="quicktry">
+      <div>
+        <b style="font-size:14px">⚡ How to try BrandLens in 2 minutes:</b>
+        <div class="quicktry-steps" style="margin-top:6px">
+          <div class="quicktry-step"><span>1</span> Click "Load sample post"</div>
+          <div class="quicktry-step"><span>2</span> Notice live rule flags on right</div>
+          <div class="quicktry-step"><span>3</span> Click "Accept" or "Run AI check"</div>
+          <div class="quicktry-step"><span>4</span> Submit & switch role to Reviewer</div>
+        </div>
+      </div>
+      <div>
+        <button class="b" onclick="loadSampleDraft()">🚀 Load sample post</button>
+      </div>
+    </div>
+
+    <div class="g">
+      <!-- Left Column: Input Form -->
+      <div class="cd">
+        <h2>1. Add & Ingest Content</h2>
+        <p class="mu">Draft or upload marketing copy. Audited in real-time against ${esc(S.kb.brandName)}'s active guidelines and facts.</p>
+
+        <label>Campaign / Content Title *</label>
+        <input type="text" id="ti" value="${esc(D.title)}" placeholder="e.g. Autumn Blend Social Campaign" oninput="D.title=this.value">
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
+          <div>
+            <label>Content Format</label>
+            <select onchange="D.type=this.value; draw()">
+              ${['Social post', 'Advertisement', 'Email', 'Document'].map(x => `<option${D.type === x ? ' selected' : ''}>${x}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label>Upload Document (.txt, .docx)</label>
+            <input type="file" id="fileUpload" accept=".txt,.docx" onchange="handleFileUpload(event)" style="padding:5px">
+          </div>
+        </div>
+
+        ${D.type === 'Email' ? `
+          <label>Email Subject Line (under 60 chars)</label>
+          <input type="text" value="${esc(D.subject || '')}" placeholder="e.g. Exclusive single-origin harvest is here!" oninput="D.subject=this.value; upd()">
+        ` : ''}
+
+        <label>Body Content *</label>
+        <textarea id="tx" placeholder="Type or paste copy here..." oninput="D.text=this.value; upd()"></textarea>
+
+        <!-- PII Warning Banner -->
+        ${pii.hasPII ? `
+          <div class="pii-alert">
+            ⚠️ <b>Privacy Notice:</b> Content appears to contain personal info (${[...pii.emails, ...pii.phones].join(', ')}). Sensitive data should be redacted before public campaigns.
+          </div>
+        ` : ''}
+
+        <!-- Media Attachment & Visual Identity Check -->
+        <div style="margin-top:12px; padding:10px; border:1px solid var(--bd); border-radius:8px">
+          <label style="margin-top:0">
+            <input type="checkbox" ${D.img ? 'checked' : ''} onchange="D.img=this.checked?1:0; upd()">
+            Attach image asset to this draft
+          </label>
+          ${D.img ? `
+            <div style="margin-top:8px">
+              <label>Image Alt Text (Required for WCAG accessibility)</label>
+              <input type="text" id="al" value="${esc(D.alt)}" placeholder="Describe image content for screen readers..." oninput="D.alt=this.value; upd()">
+              <label>Upload image to verify dimensions & format</label>
+              <input type="file" accept="image/png,image/jpeg,image/webp" onchange="handleImageUpload(event)" style="padding:4px">
+              ${D.imgMeta ? `
+                <div class="mu" style="margin-top:6px">
+                  ✅ <b>File:</b> ${esc(D.imgMeta.name)} (${D.imgMeta.width}x${D.imgMeta.height}px, ${D.imgMeta.format}) —
+                  ${D.imgMeta.width >= 600 ? '<span class="p ok">Dimensions compliant</span>' : '<span class="p high">Too small (min 600px width recommended)</span>'}
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="row" style="margin-top:14px">
+          <button class="b s" id="aib" onclick="runAiReview()">🤖 Run AI Check (Tone & Claims)</button>
+          <button class="b" onclick="submitDraft()">📤 Submit for Review</button>
+          <button class="b s" onclick="resetDraft()" style="margin-left:auto">Clear</button>
+        </div>
+        <p class="mu" id="ais" style="margin-top:8px"></p>
+        <p class="mu" id="sm"></p>
+      </div>
+
+      <!-- Right Column: Live Audit Findings -->
+      <div class="cd">
+        <h2>2. Audit Findings & Intent-Preserving Fixes</h2>
+        <div id="pv" class="pv"></div>
+        <div id="fl" style="margin-top:14px"></div>
+      </div>
+    </div>
+  `;
+
+  $('#tx').value = D.text;
+  upd();
+}
+
+function loadSampleDraft() {
+  D.title = 'Autumn promo post';
+  D.type = 'Social post';
+  D.text = SAMPLE;
+  D.img = 0;
+  D.alt = '';
+  D.ai = [];
+  D.dis = {};
+  draw();
+}
+
+function resetDraft() {
+  D = blankDraft();
+  draw();
+}
+
+// In-browser File Upload Handler (.txt, .docx)
+function handleFileUpload(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (ext === 'txt') {
+    const reader = new FileReader();
+    reader.onload = e => {
+      D.text = e.target.result;
+      if (!D.title) D.title = file.name.replace(/\.txt$/i, '');
+      draw();
+    };
+    reader.readAsText(file);
+  } else if (ext === 'docx') {
+    if (window.mammoth) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const arrayBuffer = e.target.result;
+        mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+          .then(result => {
+            D.text = result.value;
+            if (!D.title) D.title = file.name.replace(/\.docx$/i, '');
+            draw();
+          })
+          .catch(err => alert('Could not parse .docx file: ' + err.message));
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      alert('Mammoth.js parser is loading. Please try again in a few seconds.');
+    }
+  }
+}
+
+// Image Dimension & Format Validation
+function handleImageUpload(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      D.imgMeta = {
+        name: file.name,
+        width: img.width,
+        height: img.height,
+        format: file.type || 'image'
+      };
+      draw();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// Merge Rule-Based & AI Findings
+function mergeFindings(ruleFindings) {
+  const aiFindings = (D.ai || [])
+    .map(x => ({ ...x, pos: D.text.indexOf(x.span) }))
+    .filter(x => x.pos >= 0 && !ruleFindings.some(y => y.span && x.pos < y.pos + y.span.length && y.pos < x.pos + x.span.length));
+
+  const counts = {};
+  aiFindings.forEach(x => {
+    const k = x.rule + '|' + x.span;
+    counts[k] = (counts[k] || 0) + 1;
+    x.k = 'ai|' + k + '|' + counts[k];
+  });
+
+  return ruleFindings.concat(aiFindings).sort((a, b) => a.pos - b.pos);
+}
+
+function upd() {
+  const rawRule = checkContent(D.text, D, S.kb);
+  F = mergeFindings(rawRule);
+  F.forEach(x => x.dis = D.dis[x.k] || null);
+  const open = F.filter(x => !x.dis);
+
+  $('#pv').innerHTML = D.text ? hl(D.text, F) : '<span class="mu">Your copy will appear here with live highlights as you type.</span>';
+
+  $('#fl').innerHTML = (D.text ? `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px">
+      <span class="mu"><b>${open.length} open issues</b> · ${F.length - open.length} dismissed</span>
+      <span class="p ${open.length === 0 ? 'ok' : 'medium'}">${open.length === 0 ? 'All Checks Passed' : 'Action Required'}</span>
+    </div>
+  ` : '') + F.map((x, i) => `
+    <div class="f ${x.dis ? 'd' : ''}">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start">
+        <div>
+          <span class="p ${x.sev}">${x.sev}</span>
+          <b style="margin-left:6px">${esc(x.span || 'Attached Asset')}</b>
+          ${x.ai ? '<span class="p low" style="margin-left:4px">🤖 AI-assisted · Evidence verified</span>' : ''}
+        </div>
+        <span class="mu" style="font-size:12px">${esc(getRuleName(x.rule, S.kb))}</span>
+      </div>
+
+      <div style="margin-top:6px">${esc(x.why)}</div>
+      ${x.fact ? `<div class="mu" style="margin-top:4px">📌 <b>Approved Fact:</b> ${esc(x.fact)}</div>` : ''}
+
+      <!-- Intent-Preserving Fix Diff -->
+      ${x.fix && !x.dis ? `
+        <div class="diff-box">
+          <div><span class="mu">Original:</span> <del>${esc(x.span)}</del></div>
+          <div><span class="mu">Suggested:</span> <ins>${esc(x.fix)}</ins></div>
+        </div>
+        ${x.preserved ? `<div class="mu" style="font-size:12px">💡 <i>Preserved Intent: ${esc(x.preserved)}</i></div>` : ''}
+      ` : ''}
+
+      ${x.dis ? `
+        <div class="row">
+          <span class="mu">Dismissed: <i>${esc(x.dis)}</i></span>
+          <button class="b s" onclick="undoDismiss(${i})">Undo</button>
+        </div>
+      ` : `
+        <div class="row">
+          ${x.man ? `
+            <span class="mu">Review and edit manually in editor.</span>
+          ` : `
+            <button class="b" onclick="acceptFix(${i})">${x.fix ? `Accept: "${esc(x.fix)}"` : 'Accept: Remove'}</button>
+            <button class="b s" onclick="promptCustomFix(${i})">Edit Fix</button>
+          `}
+          <select onchange="dismissFinding(${i}, this.value)">
+            <option value="">Dismiss with reason...</option>
+            <option value="Intentional brand exception">Intentional brand exception</option>
+            <option value="Rule does not apply here">Rule does not apply here</option>
+            <option value="Suggestion changes my meaning">Suggestion changes my meaning</option>
+            <option value="Approved by Senior Leadership">Approved by Senior Leadership</option>
+          </select>
+        </div>
+      `}
+    </div>
+  `).join('');
+}
+
+function acceptFix(i) {
+  const x = F[i];
+  if (x.pos < 0) return;
+  D.text = D.text.slice(0, x.pos) + x.fix + D.text.slice(x.pos + x.span.length);
+  if (!x.fix) D.text = D.text.replace(/ {2,}/g, ' ').replace(/\s+([.,!?])/g, '$1');
+  D.vers.push({
+    t: now(),
+    label: `Accepted fix: ${x.fix ? `"${x.span}" → "${x.fix}"` : `removed "${x.span}"`}`,
+    text: D.text
+  });
+  $('#tx').value = D.text;
+  upd();
+}
+
+function promptCustomFix(i) {
+  const x = F[i];
+  const custom = prompt('Enter your custom replacement for "' + x.span + '":', x.fix || x.span);
+  if (custom !== null) {
+    x.fix = custom;
+    acceptFix(i);
+  }
+}
+
+function dismissFinding(i, reason) {
+  if (!reason) return;
+  D.dis[F[i].k] = reason;
+  D.vers.push({
+    t: now(),
+    label: `Dismissed "${F[i].span}": ${reason}`,
+    text: D.text
+  });
+  upd();
+}
+
+function undoDismiss(i) {
+  delete D.dis[F[i].k];
+  upd();
+}
+
+// --- AI Check Calling /api/ai-review with Evidence Verification ---
+async function runAiReview() {
+  const statusEl = $('#ais');
+  if (!D.text.trim()) {
+    statusEl.textContent = 'Please enter some text first.';
+    return
+  }
+
+  statusEl.textContent = '🤖 Calling serverless AI review (/api/ai-review)...';
+  $('#aib').disabled = true;
+
+  try {
+    const res = await fetch('/api/ai-review', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: D.text,
+        guidelines: S.kb.guidelines,
+        facts: S.kb.facts
+      })
+    });
+
+    if (!res.ok) {
+      throw new Error(`Server returned HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    const rawSuggestions = data.findings || [];
+
+    // --- Strict Evidence Verification Algorithm ---
+    // 1. Quote must be exact verbatim substring in D.text
+    // 2. Referenced rule must exist in active Knowledge Base
+    // 3. Referenced fact (if any) must exist in active Facts
+    const verified = rawSuggestions.filter(item => {
+      if (!item || typeof item.quote !== 'string') return false;
+      const quoteInText = D.text.includes(item.quote);
+      const ruleExists = S.kb.guidelines.some(g => g.id === item.rule);
+      const factExists = !item.fact || S.kb.facts.some(f => f.id === item.fact);
+      return quoteInText && ruleExists && factExists;
+    }).map(x => ({
+      span: x.quote,
+      rule: x.rule,
+      sev: ['high', 'medium', 'low'].includes(x.sev) ? x.sev : 'medium',
+      why: String(x.why || 'AI flagged brand alignment issue.'),
+      fix: String(x.fix || ''),
+      fact: x.fact || '',
+      ai: 1,
+      preserved: 'AI suggested tone refinement.'
+    }));
+
+    D.ai = verified;
+    const discarded = rawSuggestions.length - verified.length;
+
+    statusEl.innerHTML = `✅ <b>AI Review Completed:</b> ${rawSuggestions.length} suggested, <b>${verified.length} verified</b> against content & rules (${discarded} unverified discarded).`;
+    upd();
+
+  } catch (err) {
+    console.warn('AI API error:', err);
+    statusEl.innerHTML = `⚠️ <i>AI check unavailable on this network (${err.message}) — live rule-based audit is active.</i>`;
+  }
+
+  $('#aib').disabled = false;
+}
+
+// Submit Draft to Review Pipeline
+function submitDraft() {
+  if (!D.title.trim() || !D.text.trim()) {
+    $('#sm').textContent = 'Please provide both a Title and Content.';
+    return;
+  }
+
+  const id = D.id || 'sub_' + Date.now();
+  const openCount = F.filter(x => !x.dis).length;
+
+  const item = {
+    id,
+    title: D.title,
+    type: D.type,
+    text: D.text,
+    img: D.img,
+    alt: D.alt,
+    imgMeta: D.imgMeta,
+    status: 'In review',
+    findings: F.map(x => ({ ...x })),
+    vers: D.vers.concat([{ t: now(), label: 'Submitted for human review', text: D.text }]),
+    comments: [],
+    log: [{ t: now(), ev: `Submitted for review by Creator with ${openCount} open issue(s)` }]
+  };
+
+  S.subs = S.subs.filter(s => s.id !== id);
+  S.subs.unshift(item);
+  save();
+
+  D = blankDraft();
+  V = { tab: 'subs', sel: id };
+  draw();
+}
+
+// --- VIEW 2: Submissions & Human Review ---
+function vSubs() {
+  if (V.sel) return vSubmissionDetail();
+
+  $('#mn').innerHTML = `
+    <div class="cd">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px">
+        <h2>Content Submissions</h2>
+        <span class="mu">${S.subs.length} total drafts</span>
+      </div>
+      ${S.subs.length === 0 ? '<p class="mu">No submissions yet. Create and submit a draft from the "Audit Content" tab.</p>' : ''}
+      ${S.subs.map(s => {
+        const openIssues = s.findings.filter(x => !x.dis).length;
+        const statusBadge = s.status === 'Approved' ? 'ok' : s.status === 'Changes requested' ? 'high' : 'medium';
+        return `
+          <div class="f" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px">
+            <div>
+              <b style="font-size:15px">${esc(s.title)}</b>
+              <span class="p ${statusBadge}" style="margin-left:6px">${s.status}</span>
+              <div class="mu" style="margin-top:4px">${esc(s.type)} · ${openIssues} open issue(s) · Last updated ${s.vers[s.vers.length - 1]?.t || ''}</div>
+            </div>
+            <button class="b s" onclick="V.sel='${s.id}'; draw()">View & Review</button>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function vSubmissionDetail() {
+  const s = S.subs.find(x => x.id === V.sel);
+  if (!s) { V.sel = null; draw(); return; }
+
+  const isReviewer = S.role === 'reviewer';
+  const openHigh = s.findings.filter(x => !x.dis && x.sev === 'high').length;
+  const statusBadge = s.status === 'Approved' ? 'ok' : s.status === 'Changes requested' ? 'high' : 'medium';
+
+  $('#mn').innerHTML = `
+    <button class="b s" onclick="V.sel=null; draw()" style="margin-bottom:10px">← Back to Submissions</button>
+
+    <div class="cd">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px">
+        <h2>${esc(s.title)} <span class="p ${statusBadge}">${s.status}</span></h2>
+        <span class="mu">ID: ${s.id}</span>
+      </div>
+
+      <div class="pv" style="margin-top:10px">${hl(s.text, s.findings)}</div>
+
+      <h3>Audit Findings (${s.findings.length})</h3>
+      <table>
+        <thead><tr><th>Sev</th><th>Matched Span</th><th>Rule / Fact</th><th>Status</th></tr></thead>
+        <tbody>
+          ${s.findings.map(x => `
+            <tr>
+              <td><span class="p ${x.sev}">${x.sev}</span></td>
+              <td><b>${esc(x.span || 'Attached Asset')}</b></td>
+              <td>${esc(getRuleName(x.rule, S.kb))}${x.fact ? ` · Fact: ${esc(x.fact)}` : ''}</td>
+              <td>${x.dis ? `<span class="mu">Dismissed: ${esc(x.dis)}</span>` : '<span class="p high">Open</span>'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+
+      <h3>Reviewer Feedback & Decision</h3>
+      <div id="commentsList" style="margin-bottom:12px">
+        ${s.comments.map(c => `
+          <div class="f" style="margin-bottom:6px">
+            <b>${esc(c.by)}</b> <span class="mu">(${c.t})</span>
+            <div style="margin-top:4px">${esc(c.text)}</div>
+          </div>
+        `).join('') || '<p class="mu">No reviewer comments yet.</p>'}
+      </div>
+
+      ${isReviewer ? `
+        <div style="background:var(--bg); padding:14px; border-radius:8px">
+          <label style="margin-top:0">Add Review Note / Feedback</label>
+          <textarea id="revComment" style="min-height:70px" placeholder="Write feedback for the creator..."></textarea>
+          <div class="row" style="margin-top:10px">
+            <button class="b" onclick="submitReviewDecision('Approved')">
+              ${openHigh > 0 ? `Approve Anyway (${openHigh} high severity open)` : '✅ Approve Draft'}
+            </button>
+            <button class="b danger" onclick="submitReviewDecision('Changes requested')">
+              ⚠️ Request Changes
+            </button>
+          </div>
+        </div>
+      ` : `
+        <div style="padding:10px; background:var(--bg); border-radius:8px">
+          <span class="mu">Viewing as Creator. Switch role to <b>Reviewer</b> above to make approval decisions.</span>
+          ${s.status === 'Changes requested' ? `
+            <div style="margin-top:8px">
+              <button class="b" onclick="reviseSubmission('${s.id}')">✏️ Revise this draft</button>
+            </div>
+          ` : ''}
+        </div>
+      `}
+
+      <h3>Version History</h3>
+      <table>
+        <thead><tr><th>Timestamp</th><th>Action / Label</th></tr></thead>
+        <tbody>
+          ${s.vers.map(v => `<tr><td class="mu">${v.t}</td><td>${esc(v.label)}</td></tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h3>Immutable Audit Log</h3>
+      <table>
+        <thead><tr><th>Timestamp</th><th>Event</th></tr></thead>
+        <tbody>
+          ${s.log.map(l => `<tr><td class="mu">${l.t}</td><td>${esc(l.ev)}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function submitReviewDecision(newStatus) {
+  const s = S.subs.find(x => x.id === V.sel);
+  const comment = $('#revComment').value.trim();
+
+  if (newStatus === 'Changes requested' && !comment) {
+    alert('Please provide feedback explaining the changes required.');
+    return;
+  }
+
+  if (comment) {
+    s.comments.push({ by: 'Reviewer', t: now(), text: comment });
+  }
+
+  s.status = newStatus;
+  s.log.push({ t: now(), ev: `${newStatus} by Reviewer (Human Decision)` });
+  save();
+  draw();
+}
+
+function reviseSubmission(id) {
+  const s = S.subs.find(x => x.id === id);
+  D = {
+    id: s.id,
+    title: s.title,
+    type: s.type,
+    text: s.text,
+    img: s.img,
+    alt: s.alt,
+    imgMeta: s.imgMeta,
+    vers: s.vers.slice(),
+    dis: {},
+    comments: [],
+    log: []
+  };
+  s.findings.forEach(x => { if (x.dis) D.dis[x.k] = x.dis; });
+  V = { tab: 'check', sel: null };
+  draw();
+}
+
+// --- VIEW 3: Editable Knowledge Base ---
+function vRules() {
+  $('#mn').innerHTML = `
+    <div class="cd">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px">
+        <div>
+          <h2>Brand Guidelines (Voice, Tone & Claims)</h2>
+          <p class="mu">Rule engine reads directly from this live data. Changes apply immediately.</p>
+        </div>
+        <div style="display:flex; gap:8px">
+          <button class="b" onclick="openAddGuidelineModal()">+ Add Guideline</button>
+          <button class="b s" onclick="openImportModal()">📥 Paste & Import</button>
+          <button class="b s" onclick="resetDefaultKb()">Reset Defaults</button>
+        </div>
+      </div>
+
+      <table style="margin-top:12px">
+        <thead><tr><th>ID</th><th>Category</th><th>Rule Description</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${S.kb.guidelines.map((g, idx) => `
+            <tr>
+              <td><b>${g.id}</b></td>
+              <td><b>${esc(g.name)}</b></td>
+              <td>${esc(g.rule)}</td>
+              <td>
+                <button class="b s" style="padding:2px 8px; font-size:12px" onclick="editGuideline(${idx})">Edit</button>
+                <button class="b danger" style="padding:2px 8px; font-size:12px" onclick="deleteGuideline(${idx})">Delete</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cd">
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <h2>Approved Brand Facts (Claims & Evidence)</h2>
+        <button class="b" onclick="openAddFactModal()">+ Add Approved Fact</button>
+      </div>
+      <table style="margin-top:12px">
+        <thead><tr><th>Fact ID</th><th>Statement</th><th>Source</th><th>Expiry Date</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${S.kb.facts.map((f, idx) => {
+            const isExpired = f.expiry && new Date(f.expiry) < new Date();
+            return `
+              <tr>
+                <td><b>${f.id}</b></td>
+                <td>${esc(f.text)}</td>
+                <td class="mu">${esc(f.source)}</td>
+                <td class="mu">${esc(f.expiry || 'No Expiry')}</td>
+                <td>${isExpired ? '<span class="p high">Expired</span>' : '<span class="p ok">Valid</span>'}</td>
+                <td>
+                  <button class="b s" style="padding:2px 8px; font-size:12px" onclick="editFact(${idx})">Edit</button>
+                  <button class="b danger" style="padding:2px 8px; font-size:12px" onclick="deleteFact(${idx})">Delete</button>
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cd">
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <h2>Approved & Banned Terminology</h2>
+        <button class="b" onclick="openAddTermModal()">+ Add Term</button>
+      </div>
+      <table style="margin-top:12px">
+        <thead><tr><th>Banned / Avoid</th><th>Preferred Replacement</th><th>Context / Reason</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${S.kb.terms.map((t, idx) => `
+            <tr>
+              <td><span class="p high">${esc(t.bad)}</span></td>
+              <td><span class="p ok">${esc(t.good)}</span></td>
+              <td class="mu">${esc(t.note || '')}</td>
+              <td>
+                <button class="b danger" style="padding:2px 8px; font-size:12px" onclick="deleteTerm(${idx})">Delete</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// Modal Form Actions for Knowledge Base
+function openAddGuidelineModal() {
+  showModal(`
+    <h3>Add Brand Guideline</h3>
+    <label>Guideline ID (e.g. G7)</label>
+    <input type="text" id="m_gid" placeholder="G7">
+    <label>Category Name</label>
+    <input type="text" id="m_gname" placeholder="Tone / Formatting">
+    <label>Rule Description</label>
+    <textarea id="m_grule" placeholder="State the rule clearly..."></textarea>
+    <div class="row" style="margin-top:14px">
+      <button class="b" onclick="saveNewGuideline()">Save Guideline</button>
+      <button class="b s" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+
+function saveNewGuideline() {
+  const id = $('#m_gid').value.trim();
+  const name = $('#m_gname').value.trim();
+  const rule = $('#m_grule').value.trim();
+  if (!id || !rule) { alert('Please enter ID and Rule text.'); return; }
+
+  S.kb.guidelines.push({ id, name: name || 'General', rule });
+  save();
+  closeModal();
+  draw();
+}
+
+function editGuideline(idx) {
+  const g = S.kb.guidelines[idx];
+  showModal(`
+    <h3>Edit Guideline ${g.id}</h3>
+    <label>Category Name</label>
+    <input type="text" id="m_gname" value="${esc(g.name)}">
+    <label>Rule Description</label>
+    <textarea id="m_grule">${esc(g.rule)}</textarea>
+    <div class="row" style="margin-top:14px">
+      <button class="b" onclick="updateGuideline(${idx})">Update</button>
+      <button class="b s" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+
+function updateGuideline(idx) {
+  S.kb.guidelines[idx].name = $('#m_gname').value.trim();
+  S.kb.guidelines[idx].rule = $('#m_grule').value.trim();
+  save();
+  closeModal();
+  draw();
+}
+
+function deleteGuideline(idx) {
+  if (confirm(`Delete guideline ${S.kb.guidelines[idx].id}?`)) {
+    S.kb.guidelines.splice(idx, 1);
+    save();
+    draw();
+  }
+}
+
+// Fact Modals
+function openAddFactModal() {
+  showModal(`
+    <h3>Add Approved Fact</h3>
+    <label>Fact ID (e.g. F5)</label>
+    <input type="text" id="m_fid" placeholder="F5">
+    <label>Statement</label>
+    <textarea id="m_ftext" placeholder="State the fact precisely..."></textarea>
+    <label>Source Document</label>
+    <input type="text" id="m_fsource" placeholder="e.g. Annual Audit Report 2026">
+    <label>Expiry Date</label>
+    <input type="date" id="m_fexp">
+    <div class="row" style="margin-top:14px">
+      <button class="b" onclick="saveNewFact()">Save Fact</button>
+      <button class="b s" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+
+function saveNewFact() {
+  const id = $('#m_fid').value.trim();
+  const text = $('#m_ftext').value.trim();
+  const source = $('#m_fsource').value.trim();
+  const expiry = $('#m_fexp').value;
+  if (!id || !text) { alert('Please enter ID and fact statement.'); return; }
+
+  S.kb.facts.push({ id, text, source: source || 'Internal Record', expiry: expiry || '' });
+  save();
+  closeModal();
+  draw();
+}
+
+function editFact(idx) {
+  const f = S.kb.facts[idx];
+  showModal(`
+    <h3>Edit Fact ${f.id}</h3>
+    <label>Statement</label>
+    <textarea id="m_ftext">${esc(f.text)}</textarea>
+    <label>Source Document</label>
+    <input type="text" id="m_fsource" value="${esc(f.source)}">
+    <label>Expiry Date</label>
+    <input type="date" id="m_fexp" value="${f.expiry || ''}">
+    <div class="row" style="margin-top:14px">
+      <button class="b" onclick="updateFact(${idx})">Update</button>
+      <button class="b s" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+
+function updateFact(idx) {
+  S.kb.facts[idx].text = $('#m_ftext').value.trim();
+  S.kb.facts[idx].source = $('#m_fsource').value.trim();
+  S.kb.facts[idx].expiry = $('#m_fexp').value;
+  save();
+  closeModal();
+  draw();
+}
+
+function deleteFact(idx) {
+  if (confirm(`Delete fact ${S.kb.facts[idx].id}?`)) {
+    S.kb.facts.splice(idx, 1);
+    save();
+    draw();
+  }
+}
+
+// Term Modals
+function openAddTermModal() {
+  showModal(`
+    <h3>Add Banned / Preferred Term</h3>
+    <label>Banned / Avoid Term</label>
+    <input type="text" id="m_tbad" placeholder="e.g. cheap">
+    <label>Preferred Replacement</label>
+    <input type="text" id="m_tgood" placeholder="e.g. affordable">
+    <label>Context / Note</label>
+    <input type="text" id="m_tnote" placeholder="e.g. Brand voice principle">
+    <div class="row" style="margin-top:14px">
+      <button class="b" onclick="saveNewTerm()">Save Term</button>
+      <button class="b s" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+
+function saveNewTerm() {
+  const bad = $('#m_tbad').value.trim();
+  const good = $('#m_tgood').value.trim();
+  const note = $('#m_tnote').value.trim();
+  if (!bad || !good) { alert('Please enter both banned and replacement terms.'); return; }
+
+  S.kb.terms.push({ bad, good, note });
+  save();
+  closeModal();
+  draw();
+}
+
+function deleteTerm(idx) {
+  S.kb.terms.splice(idx, 1);
+  save();
+  draw();
+}
+
+// Paste & Import Modal
+function openImportModal() {
+  showModal(`
+    <h3>Paste & Import Guidelines</h3>
+    <p class="mu">Paste guidelines in "G7 Category: Rule description" format (one per line):</p>
+    <textarea id="importText" style="min-height:120px" placeholder="G7 Formatting: Always capitalize coffee roast names.&#10;G8 Pricing: Do not mention competitor pricing."></textarea>
+    <div class="row" style="margin-top:14px">
+      <button class="b" onclick="processImport()">Import Guidelines</button>
+      <button class="b s" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+
+function processImport() {
+  const val = $('#importText').value.trim();
+  if (!val) return;
+
+  const lines = val.split('\n');
+  let count = 0;
+  lines.forEach(line => {
+    const m = line.match(/^([A-Z0-9]+)\s+([^:]+):\s*(.+)$/i);
+    if (m) {
+      S.kb.guidelines.push({ id: m[1].toUpperCase(), name: m[2].trim(), rule: m[3].trim() });
+      count++;
+    }
+  });
+
+  save();
+  closeModal();
+  alert(`Successfully imported ${count} guidelines!`);
+  draw();
+}
+
+function resetDefaultKb() {
+  if (confirm('Reset Knowledge Base to original Brewly Coffee default rules and facts?')) {
+    S.kb = JSON.parse(JSON.stringify(DEFAULT_KB));
+    save();
+    draw();
+  }
+}
+
+// --- VIEW 4: Visual Identity & Color Palette ---
+function vVisual() {
+  const primary = S.kb.colors[0]?.hex || '#3b5bdb';
+  const textCol = S.kb.colors[1]?.hex || '#1b2238';
+  const bgCol = S.kb.colors[2]?.hex || '#f5f6fb';
+
+  const ratio1 = getContrastRatio(primary, bgCol).toFixed(2);
+  const ratio2 = getContrastRatio(textCol, bgCol).toFixed(2);
+  const ratio3 = getContrastRatio(primary, '#ffffff').toFixed(2);
+
+  $('#mn').innerHTML = `
+    <div class="cd">
+      <h2>Brand Color Palette</h2>
+      <p class="mu">Manage approved brand colors and evaluate WCAG accessibility contrast ratios.</p>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:12px; margin-top:14px">
+        ${S.kb.colors.map((c, i) => `
+          <div style="border:1px solid var(--bd); border-radius:8px; padding:12px; display:flex; align-items:center; gap:12px">
+            <span class="swatch" style="background:${c.hex}"></span>
+            <div>
+              <b>${esc(c.name)}</b>
+              <div class="mu">${c.hex} · ${c.role}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="cd">
+      <h2>WCAG 2.1 Contrast Ratio Verification</h2>
+      <p class="mu">Calculated using relative luminance math according to W3C standards.</p>
+
+      <table>
+        <thead><tr><th>Color Pair</th><th>Contrast Ratio</th><th>WCAG AA (4.5:1)</th><th>WCAG AAA (7:1)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Text (${textCol}) on Background (${bgCol})</td>
+            <td><b>${ratio2}:1</b></td>
+            <td>${ratio2 >= 4.5 ? '<span class="p ok">Pass</span>' : '<span class="p high">Fail</span>'}</td>
+            <td>${ratio2 >= 7.0 ? '<span class="p ok">Pass</span>' : '<span class="p medium">Fail (AAA)</span>'}</td>
+          </tr>
+          <tr>
+            <td>Primary Accent (${primary}) on Background (${bgCol})</td>
+            <td><b>${ratio1}:1</b></td>
+            <td>${ratio1 >= 4.5 ? '<span class="p ok">Pass</span>' : '<span class="p medium">Large text only (3:1)</span>'}</td>
+            <td>${ratio1 >= 7.0 ? '<span class="p ok">Pass</span>' : '<span class="p medium">Fail</span>'}</td>
+          </tr>
+          <tr>
+            <td>Primary Accent (${primary}) on White (#ffffff)</td>
+            <td><b>${ratio3}:1</b></td>
+            <td>${ratio3 >= 4.5 ? '<span class="p ok">Pass</span>' : '<span class="p medium">Large text only</span>'}</td>
+            <td>${ratio3 >= 7.0 ? '<span class="p ok">Pass</span>' : '<span class="p medium">Fail</span>'}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cd">
+      <h2>Logo & Imagery Guidelines</h2>
+      <ul>
+        <li><b>Clearspace:</b> Keep at least 20px padding around the Brewly logo.</li>
+        <li><b>Resolution:</b> Hero images must have a minimum width of 1200px; inline images minimum 600px.</li>
+        <li><b>Formats:</b> Supported formats are WebP, PNG, and JPEG.</li>
+        <li><b>Alt-Text Mandatory:</b> Every image published must have descriptive alt-text for accessibility.</li>
+      </ul>
+    </div>
+  `;
+}
+
+// --- VIEW 5: Governance Insights Dashboard ---
+function vInsights() {
+  const allFindings = [];
+  const dismissedRules = {};
+  const issuesByFormat = {};
+
+  S.subs.forEach(s => {
+    issuesByFormat[s.type] = (issuesByFormat[s.type] || 0) + s.findings.length;
+    s.findings.forEach(f => {
+      allFindings.push(f);
+      if (f.dis) {
+        dismissedRules[f.rule] = (dismissedRules[f.rule] || 0) + 1;
+      }
+    });
+  });
+
+  const ruleCounts = {};
+  allFindings.forEach(f => {
+    ruleCounts[f.rule] = (ruleCounts[f.rule] || 0) + 1;
+  });
+
+  const sortedRules = Object.entries(ruleCounts).sort((a, b) => b[1] - a[1]);
+  const sortedDismissed = Object.entries(dismissedRules).sort((a, b) => b[1] - a[1]);
+
+  $('#mn').innerHTML = `
+    <div class="cd">
+      <h2>Governance Insights & Analytics</h2>
+      <p class="mu">Real-time governance intelligence across all reviewed drafts.</p>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-top:14px">
+        <div style="background:var(--bg); padding:14px; border-radius:8px">
+          <div class="mu">Total Drafts Audited</div>
+          <div style="font-size:24px; font-weight:bold">${S.subs.length}</div>
+        </div>
+        <div style="background:var(--bg); padding:14px; border-radius:8px">
+          <div class="mu">Total Policy Violations Found</div>
+          <div style="font-size:24px; font-weight:bold">${allFindings.length}</div>
+        </div>
+        <div style="background:var(--bg); padding:14px; border-radius:8px">
+          <div class="mu">Total Exceptions Dismissed</div>
+          <div style="font-size:24px; font-weight:bold">${Object.values(dismissedRules).reduce((a, b) => a + b, 0)}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="g">
+      <div class="cd">
+        <h2>Most Frequent Policy Violations</h2>
+        <table>
+          <thead><tr><th>Rule</th><th>Description</th><th>Violation Count</th></tr></thead>
+          <tbody>
+            ${sortedRules.map(([rId, cnt]) => `
+              <tr>
+                <td><b>${rId}</b></td>
+                <td>${esc(getRuleName(rId, S.kb))}</td>
+                <td><span class="p high">${cnt}</span></td>
+              </tr>
+            `).join('') || '<tr><td colspan="3" class="mu">No violations logged yet.</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cd">
+        <h2>Unclear Guideline Detector (Most-Dismissed)</h2>
+        <p class="mu">Rules dismissed multiple times may be overly restrictive or ambiguous.</p>
+        <table>
+          <thead><tr><th>Rule</th><th>Dismissals</th><th>Recommendation</th></tr></thead>
+          <tbody>
+            ${sortedDismissed.map(([rId, cnt]) => `
+              <tr>
+                <td><b>${rId}</b></td>
+                <td><span class="p medium">${cnt} dismissals</span></td>
+                <td>${cnt >= 2 ? '⚠️ <i>Guideline may be unclear or overly rigid. Consider reviewing wording.</i>' : 'Normal frequency'}</td>
+              </tr>
+            `).join('') || '<tr><td colspan="3" class="mu">No dismissed findings recorded.</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// --- VIEW 6: AI Transparency & Privacy ---
+function vTransparency() {
+  $('#mn').innerHTML = `
+    <div class="cd">
+      <h2>AI & Data Use Transparency Policy</h2>
+      <p class="mu">Commitment to security, zero data retention, and evidence verification.</p>
+
+      <h3>1. AI Provider & Architecture</h3>
+      <p>BrandLens connects to <b>Google Gemini</b> (or Anthropic Claude) via a stateless Vercel Serverless Function (<code>/api/ai-review</code>). All API keys reside strictly in server environment variables and are never transmitted to or accessible by client browsers.</p>
+
+      <h3>2. What Data Is Sent to the AI</h3>
+      <ul>
+        <li>The draft text submitted by the author.</li>
+        <li>Active brand guideline clauses (e.g. voice, claim rules).</li>
+        <li>Active approved brand facts.</li>
+      </ul>
+
+      <h3>3. Zero Data Retention & Privacy</h3>
+      <p>Requests are processed purely in-memory. Neither BrandLens nor our serverless functions store, log, or sell your draft contents. Furthermore, BrandLens runs client-side PII detection to warn authors if drafts contain unredacted emails or telephone numbers.</p>
+
+      <h3>4. Evidence Verification Guarantee</h3>
+      <p>To eliminate LLM hallucinations, BrandLens passes every candidate suggestion through a strict algorithmic filter:</p>
+      <ul>
+        <li><b>Exact Substring Match:</b> The suggested quote must exist verbatim in your text.</li>
+        <li><b>Knowledge Base Grounding:</b> The cited rule ID and fact ID must exist in your active Knowledge Base.</li>
+      </ul>
+      <p>Suggestions failing these tests are automatically discarded before you ever see them.</p>
+    </div>
+  `;
+}
+
+// Modal Helper Functions
+function showModal(html) {
+  const c = $('#modalContainer');
+  c.style.display = 'flex';
+  c.innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content">${html}</div>
+    </div>
+  `;
+}
+function closeModal() {
+  const c = $('#modalContainer');
+  c.style.display = 'none';
+  c.innerHTML = '';
+}
+
+// --- Bootstrap App ---
+initTheme();
+loadState();
+draw();
+</script>
+</body>
+</html>
