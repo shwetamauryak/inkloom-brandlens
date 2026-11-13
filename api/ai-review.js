@@ -10,7 +10,20 @@ function limited(ip) {
   if (hits.size > 500) for (const [k, v] of hits) if (!v.some(t => now - t < windowMs)) hits.delete(k);
   return recent.length > max;
 }
+async function fetchWithRetry(url, options, retries = 2) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const response = await fetch(url, options);
 
+    if (response.ok) return response;
+
+    const retryable = [429, 500, 502, 503, 504].includes(response.status);
+
+    if (!retryable || attempt === retries) return response;
+
+    await response.text();
+    await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+  }
+}
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -59,7 +72,7 @@ Review the user's content against ONLY the provided Guidelines and Approved Fact
    if (geminiKey) {
   // Model is configurable because Google retires models. Check AI Studio for a current one.
   const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
-      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+     const r = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': geminiKey },
         signal: controller.signal,
