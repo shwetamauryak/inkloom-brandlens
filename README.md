@@ -2,7 +2,7 @@
 
 > **Hackathon:** CodeNova India 2026 (Problem: Inkloom AI — Brand Governance Platform, Round 2)  
 > **Demo Brand:** Brewly Coffee  
-> **Live Public URL:** *(Will be added upon Vercel deployment)*
+> Live Public URL:** https://inkloom-brandlens.vercel.app
 
 ---
 
@@ -39,7 +39,7 @@
 - **In-Browser Text Extraction**: `mammoth.js` (pinned CDN version) for docx parsing.
 - **Serverless API**: Vercel Serverless Function (`/api/ai-review`).
 - **AI Models**: Google Gemini (model set by the `GEMINI_MODEL` environment variable, default `gemini-2.5-flash`) or Anthropic Claude (`ANTHROPIC_MODEL`).
-- **Storage**: Client-side `localStorage` with resilient error handling (and optional Supabase adapter).
+- **Storage**: Client-side `localStorage` with resilient error handling
 - **Testing**: Python evaluation script (`evaluate_violations.py`) run against planted violations, see `docs/TEST_REPORT.md` (it uses a Python copy of the rules, not the browser code).
 
 ---
