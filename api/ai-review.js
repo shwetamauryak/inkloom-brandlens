@@ -53,7 +53,7 @@ Review the user's content against ONLY the provided Guidelines and Approved Fact
     const userPrompt = `${kbText}\n\nCONTENT TO REVIEW:\n${text}`;
 
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 15000);
+    const timer = setTimeout(() => controller.abort(), 30000);
     let raw = '[]';
 
    if (geminiKey) {
