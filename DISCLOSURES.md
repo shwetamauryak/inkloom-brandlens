@@ -9,6 +9,7 @@ This document discloses all libraries, APIs, external dependencies, datasets, te
 
 ## 2. External APIs & AI Models
 - **Google Gemini API** (model set by `GEMINI_MODEL`, default `gemini-2.5-flash`): Used server-side in `/api/ai-review` for semantic tone and claim verification.
+- **Groq API**: Used server-side in `/api/ai-review` as a fallback AI provider when the primary provider is unavailable. 
 - **Anthropic Claude API** (model set by `ANTHROPIC_MODEL`): Alternative serverless LLM adapter.
 - No client-side LLM API keys are ever stored or exposed.
 
